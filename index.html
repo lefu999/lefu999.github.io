@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>珍藏阁 - 收藏品在线拍卖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .balance {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            display: flex;
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            transform: scale(1.05);
+        }
+
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .auction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .auction-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .auction-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .price-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .time-left {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .bid-section {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .bid-input {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .bid-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .bid-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(46,204,113,0.3);
+        }
+
+        .bid-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            opacity: 0.9;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .success-bid {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .auction-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">珍藏阁</div>
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#auctions">拍卖中</a></li>
+                <li><a href="#categories">分类</a></li>
+                <li><a href="#my-bids">我的竞拍</a></li>
+                <li><a href="#help">帮助</a></li>
+            </ul>
+            <div class="user-info">
+                <div class="balance">余额: ¥25,000</div>
+                <div>欢迎，收藏家</div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="hero">
+            <h1>发现珍稀收藏品</h1>
+            <p>在线竞拍，收藏人生美好时光</p>
+        </section>
+
+        <div class="search-bar">
+            <input type="text" placeholder="搜索您感兴趣的收藏品..." id="searchInput">
+            <button onclick="searchItems()">搜索</button>
+        </div>
+
+        <div class="categories">
+            <button class="category-btn active" onclick="filterCategory('all')">全部</button>
+            <button class="category-btn" onclick="filterCategory('antique')">古董</button>
+            <button class="category-btn" onclick="filterCategory('art')">艺术品</button>
+            <button class="category-btn" onclick="filterCategory('jewelry')">珠宝</button>
+            <button class="category-btn" onclick="filterCategory('coin')">钱币</button>
+            <button class="category-btn" onclick="filterCategory('watch')">手表</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">拍卖中商品</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8,932</div>
+                <div class="stat-label">注册用户</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">¥2.1M</div>
+                <div class="stat-label">本月成交额</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">156</div>
+                <div class="stat-label">今日新品</div>
+            </div>
+        </div>
+
+        <div class="auction-grid" id="auctionGrid">
+            <!-- 拍卖商品将通过JavaScript动态生成 -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 珍藏阁. 专业的收藏品拍卖平台</p>
+    </footer>
+
+    <!-- 竞拍成功模态框 -->
+    <div id="bidModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBidModal()">&times;</span>
+            <h2>竞拍成功！</h2>
+            <div id="bidResult" class="success-bid"></div>
+            <p>您的出价已记录，请关注拍卖进展。</p>
+        </div>
+    </div>
+
+    <script>
+        // 拍卖商品数据
+        const auctionItems = [
+            {
+                id: 1,
+                title: "清代青花瓷瓶",
+                description: "乾隆年间精品青花瓷，保存完好，具有极高收藏价值",
+                currentPrice: 12500,
+                timeLeft: "2天3小时",
+                category: "antique",
+                emoji: "🏺",
+                bids: 23
+            },
+            {
+                id: 2,
+                title: "民国时期油画",
+                description: "著名画家徐悲鸿弟子作品，画工精湛，题材珍贵",
+                currentPrice: 8900,
+                timeLeft: "1天12小时",
+                category: "art",
+                emoji: "🎨",
+                bids: 17
+            },
+            {
+                id: 3,
+                title: "翡翠手镯",
+                description: "缅甸A货翡翠，种水上佳，颜色浓郁，工艺精美",
+                currentPrice: 15600,
+                timeLeft: "5小时23分",
+                category: "jewelry",
+                emoji: "💍",
+                bids: 31
+            },
+            {
+                id: 4,
+                title: "袁大头银元",
+                description: "民国三年袁世凯银元，品相极佳，原光品",
+                currentPrice: 1200,
+                timeLeft: "3天8小时",
+                category: "coin",
+                emoji: "🪙",
+                bids: 8
+            },
+            {
+                id: 5,
+                title: "劳力士古董表",
+                description: "1960年代劳力士潜航者，原装表盘，机芯保养良好",
+                currentPrice: 45000,
+                timeLeft: "6天2小时",
+                category: "watch",
+                emoji: "⌚",
+                bids: 42
+            },
+            {
+                id: 6,
+                title: "和田玉摆件",
+                description: "新疆和田白玉雕刻龙凤呈祥，手工精雕，寓意吉祥",
+                currentPrice: 6800,
+                timeLeft: "12小时45分",
+                category: "antique",
+                emoji: "🐉",
+                bids: 19
+            },
+            {
+                id: 7,
+                title: "近代名家字画",
+                description: "齐白石风格花鸟画，笔墨生动，装裱精美",
+                currentPrice: 28000,
+                timeLeft: "4天16小时",
+                category: "art",
+                emoji: "🖼️",
+                bids: 56
+            },
+            {
+                id: 8,
+                title: "紫砂壶套装",
+                description: "宜兴紫砂大师作品，泥料纯正，造型典雅",
+                currentPrice: 3200,
+                timeLeft: "2天20小时",
+                category: "antique",
+                emoji: "🫖",
+                bids: 12
+            }
+        ];
+
+        let userBalance = 25000;
+        let currentFilter = 'all';
+
+        // 初始化页面
+        function init() {
+            renderAuctionItems();
+            startCountdown();
+        }
+
+        // 渲染拍卖商品
+        function renderAuctionItems() {
+            const grid = document.getElementById('auctionGrid');
+            const filteredItems = currentFilter === 'all' ? 
+                auctionItems : 
+                auctionItems.filter(item => item.category === currentFilter);
+
+            grid.innerHTML = filteredItems.map(item => `
+                <div class="auction-card" data-category="${item.category}">
+                    <div class="card-image">
+                        <span style="font-size: 4rem; z-index: 1;">${item.emoji}</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <p class="card-description">${item.description}</p>
+                        <div class="price-info">
+                            <div class="current-price">¥${item.currentPrice.toLocaleString()}</div>
+                            <div class="time-left">${item.timeLeft}</div>
+                        </div>
+                        <div style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                            已有 ${item.bids} 人出价
+                        </div>
+                        <div class="bid-section">
+                            <input type="number" class="bid-input" id="bid-${item.id}" 
+                                   placeholder="输入出价" min="${item.currentPrice + 100}">
+                            <button class="bid-btn" onclick="placeBid(${item.id})">竞拍</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 竞拍功能
+        function placeBid(itemId) {
+            const item = auctionItems.find(i => i.id === itemId);
+            const bidInput = document.getElementById(`bid-${itemId}`);
+            const bidAmount = parseInt(bidInput.value);
+
+            if (!bidAmount || bidAmount <= item.currentPrice) {
+                alert('出价必须高于当前价格！');
+                return;
+            }
+
+            if (bidAmount > userBalance) {
+                alert('余额不足，请充值后再试！');
+                return;
+            }
+
+            // 更新物品价格和出价次数
+            item.currentPrice = bidAmount;
+            item.bids += 1;
+
+            // 显示成功消息
+            showBidSuccess(item.title, bidAmount);
+
+            // 重新渲染
+            renderAuctionItems();
+
+            // 清空输入框
+            bidInput.value = '';
+        }
+
+        // 显示竞拍成功模态框
+        function showBidSuccess(itemName, amount) {
+            const modal = document.getElementById('bidModal');
+            const result = document.getElementById('bidResult');
+            
+            result.innerHTML = `
+                <strong>商品：</strong>${itemName}<br>
+                <strong>出价：</strong>¥${amount.toLocaleString()}<br>
+                <strong>状态：</strong>当前最高出价
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeBidModal() {
+            document.getElementById('bidModal').style.display = 'none';
+        }
+
+        // 分类筛选
+        function filterCategory(category) {
+            // 更新按钮状态
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            currentFilter = category;
+            renderAuctionItems();
+        }
+
+        // 搜索功能
+        function searchItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.auction-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-description').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 倒计时动画
+        function startCountdown() {
+            setInterval(() => {
+                // 这里可以添加实时倒计时逻辑
+                // 为了演示，我们只是更新一些随机数据
+                updateRandomStats();
+            }, 30000); // 每30秒更新一次
+        }
+
+        // 更新随机统计数据
+        function updateRandomStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats[0].textContent = (1247 + Math.floor(Math.random() * 10)).toLocaleString();
+            stats[1].textContent = (8932 + Math.floor(Math.random() * 20)).toLocaleString();
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('bidModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchItems();
+            }
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
